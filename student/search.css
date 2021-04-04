@@ -1,0 +1,46 @@
+ 
+    h1 {
+        padding:20px;
+      }
+      * {
+    box-sizing: border-box;
+  }
+  
+  #myInput {
+    background-image: url('/SSS/Admin/Images/search.png');
+    background-size: 40px;
+    background-position: 2px;
+    background-repeat: no-repeat;
+    width: 40%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px;
+    border: 2px solid grey;
+    margin-bottom: 12px;
+  }
+  
+  #myTable {
+    border-collapse: collapse;
+    width: 95%;
+    border: 1px solid #ddd;
+    font-size: 18px;
+    margin-left:20px;
+  }
+  
+  #myTable th{
+    text-align: left;
+    padding: 12px;
+    color:blue;
+  }
+  #myTable td {
+    text-align: left;
+    padding: 12px;
+  }
+  
+  #myTable tr {
+    border-bottom: 1px solid #ddd;
+    color:red;
+  }
+  
+  #myTable tr.header, #myTable tr:hover {
+    background-color: #f1f1f1;
+  }
