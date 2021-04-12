@@ -204,6 +204,6 @@ function validateForm() {
     swal('Error','Please Enter Email','error');
     document.getElementById("error").innerHTML="Please Enter Email";
     return false;
-  }  
 }
 </script>
+  }  

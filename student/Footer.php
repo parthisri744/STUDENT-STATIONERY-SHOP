@@ -25,15 +25,6 @@
               <li class="list-inline-item">
                 <a href="#about">About Us</a>
               </li>
-
-              <li class="list-inline-item">
-                <a href="newstudentadd.php">Add Students</a>
-              </li>
-
-              <li class="list-inline-item">
-                <a href="#portfolio">Portfolio</a>
-              </li>
-
               <li class="list-inline-item">
                 <a href="#team">Team</a>
               </li>

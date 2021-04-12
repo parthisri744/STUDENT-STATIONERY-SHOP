@@ -7,7 +7,18 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
     header("location: welcome.php");
     exit;
 }
- 
+function decrypt($ivHashCiphertext, $password) {
+    $method = "AES-256-CBC";
+    $iv = substr($ivHashCiphertext, 0, 16);
+    $hash = substr($ivHashCiphertext, 16, 32);
+    $ciphertext = substr($ivHashCiphertext, 48);
+    $key = hash('sha256', $password, true);
+    //echo "Inside Function".$ivHashCiphertext."Key :".$password;
+  
+    if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+    //echo " jhjkhj".openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+    return openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+  } 
 // Include config file
 require_once "config.php";
  
@@ -51,7 +62,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     if($row = $stmt->fetch()){
                         $id = $row["id"];
                         $username = $row["regno"];
-                        $sname = $row["sname"];
+                        $sname =  decrypt(base64_decode(($row['sname'])),'ucensss');  ;
                         $hashed_password = $row["password"];
                         $balance = $row["balance"];
                         if(password_verify($password, $hashed_password)){

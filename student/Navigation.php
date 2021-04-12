@@ -65,7 +65,7 @@ error_reporting(E_ALL);  ?>
           <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
               <li><a href="stock_view.php"">View Stock</a></li>
-              <li><a href="stock_add.php">Buy Stock</a></li>
+              <li><a href="cfm_details.php">Buy Stock</a></li>
               <li><a href="stock_his.php">History</a></li>
               </ul>
           </li>

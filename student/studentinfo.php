@@ -7,6 +7,18 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+function decrypt($ivHashCiphertext, $password) {
+    $method = "AES-256-CBC";
+    $iv = substr($ivHashCiphertext, 0, 16);
+    $hash = substr($ivHashCiphertext, 16, 32);
+    $ciphertext = substr($ivHashCiphertext, 48);
+    $key = hash('sha256', $password, true);
+    //echo "Inside Function".$ivHashCiphertext."Key :".$password;
+  
+    if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+    //echo " jhjkhj".openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+    return openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+  } 
 // Include config file
 require_once "config.php";
 $sql = "SELECT * FROM students WHERE id=:id";
@@ -27,7 +39,7 @@ $row = $query->fetch(PDO::FETCH_ASSOC);
     <h1>Student Details</h1>
      <table id="myTable" style="width:700px">
     <tr>
-    <td>Student Name<td>:<td><?php echo $row['sname'] ?>
+    <td>Student Name<td>:<td><?php echo decrypt(base64_decode(($row['sname'])),'ucensss');   ?>
     </tr>
     <tr>
     <td>Student Register Number<td>:<td><?php echo $row['regno'] ?>
@@ -45,13 +57,13 @@ $row = $query->fetch(PDO::FETCH_ASSOC);
     <td>Current Year<td>:<td><?php echo $row['syear'] ?>
     </tr>
     <tr>
-    <td>Phone Number<td>:<td><?php echo $row['phno'] ?>
+    <td>Phone Number<td>:<td><?php echo decrypt(base64_decode(($row['phno'])),'ucensss');  ?>
     </tr>
     <tr>
     <td>Student Address<td>:<td><?php echo $row['stu_address'] ?>
     </tr>
     <tr>
-    <td>Student Email<td>:<td><?php echo $row['email'] ?>
+    <td>Student Email<td>:<td><?php echo decrypt(base64_decode(($row['email'])),'ucensss'); ?>
     </tr>
     </table>
     

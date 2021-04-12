@@ -1,16 +1,55 @@
 <?php
+//including the database connection file
+include_once("config.php");
+ //require_once "config.php";
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
 session_start();
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
    //exit;
-}  ?>
+}  
+  function decrypt($ivHashCiphertext, $password) {
+  $method = "AES-256-CBC";
+  $iv = substr($ivHashCiphertext, 0, 16);
+  $hash = substr($ivHashCiphertext, 16, 32);
+  $ciphertext = substr($ivHashCiphertext, 48);
+  $key = hash('sha256', $password, true);
+  //echo "Inside Function".$ivHashCiphertext."Key :".$password;
+
+  if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+  //echo " jhjkhj".openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+  return openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+} 
+$result = $pdo->query("SELECT * FROM students ORDER BY ID DESC");
+include("Navigation.php")
+?>
 <link rel="stylesheet" href="search.css">
-    <script>
+<div align="center">
+    <h1 >Edit Student Data</h1>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for Register Number.." autocomplete="off" title="Type in a name"> 
+</div>
+    <table id='myTable'>
+ 
+    <tr bgcolor='#CCCCCC'><th>Register Number</th><th scope='col'>Name</th><th>Date Of Birth</th>
+<th>Course</th><th>Branch</th><th>Year</th><th>Phone No</th><th>Email</th></tr>
+    <?php     
+    while($row = $result->fetch(PDO::FETCH_ASSOC)) {         
+        echo "<tr>";
+        echo "<td>".$row['regno']."</td>";
+        echo "<td>".decrypt(base64_decode(($row['sname'])),'ucensss')."</td>";
+        echo "<td>".$row['dob']."</td>";    
+        echo "<td>".$row['course']."</td>"; 
+        echo "<td>".$row['branch']."</td>"; 
+        echo "<td>".$row['syear']."</td>"; 
+        echo "<td>".decrypt(base64_decode(($row['phno'])),'ucensss')."</td>"; 
+        echo "<td>".decrypt(base64_decode(($row['email'])),'ucensss')."</td>"; 
+    }
+    ?>
+    </table>
+<script>
 function myFunction() {
   var input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("myInput");
@@ -21,7 +60,7 @@ function myFunction() {
   td = tr[i].getElementsByTagName("td")[0];
   if (td) {
   txtValue = td.textContent || td.innerText;
-  if (txtValue.toUpperCase().indexOf(filter) > -1) {
+  if (txtValue.toUpperCase().indexOf(filter) > -1) {    
   tr[i].style.display = "";
   } else {
   tr[i].style.display = "none";
@@ -30,52 +69,3 @@ function myFunction() {
   }
 }
 </script>
-<?php
-include_once("Navigation.php");
-?>
-<div align="center">
-<h1 >Student Data Table</h1>
-<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for Register Number.." title="Type in a name"> 
-</div>
-<?php
-echo "<div class='table-responsive'>";
-echo "<table id='myTable'>";
-echo "<tr class='header' ><th>Register Number</th><th scope='col'>Name</th><th>Date Of Birth</th>
-<th>Course</th><th>Branch</th><th>Year</th><th>Phone No</th><th>Email</th></tr>";
-class TableRows extends RecursiveIteratorIterator {
-  function __construct($it) {
-    parent::__construct($it, self::LEAVES_ONLY);
-  }
-
-  function current() {
-    return "<td>" . parent::current(). "</td>";
-  }
-
-  function beginChildren() {
-    echo "<tr>";
-  }
-
-  function endChildren() {
-    echo "</tr>" . "\n";
-  }
-}
-try {
-  $conn = new PDO("mysql:host=localhost;dbname=SSS","root", "");
-  $count=1;
-  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $stmt = $conn->prepare("SELECT regno,sname,dob,course,branch,syear,phno,email  FROM  students");
-  $stmt->execute();
-
-  // set the resulting array to associative
-  $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
-  foreach(new TableRows(new RecursiveArrayIterator($stmt->fetchAll())) as $k=>$v) {
-    echo $v;
-  }
-  $count++;
-} catch(PDOException $e) {
-  echo "Error: " . $e->getMessage();
-}
-$conn = null;
-echo "</table>";
-//include_once("Footer.php") 
-?>

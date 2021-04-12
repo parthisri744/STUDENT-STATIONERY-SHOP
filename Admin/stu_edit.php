@@ -11,6 +11,18 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
    //exit;
 }  
+function decrypt($ivHashCiphertext, $password) {
+    $method = "AES-256-CBC";
+    $iv = substr($ivHashCiphertext, 0, 16);
+    $hash = substr($ivHashCiphertext, 16, 32);
+    $ciphertext = substr($ivHashCiphertext, 48);
+    $key = hash('sha256', $password, true);
+    //echo "Inside Function".$ivHashCiphertext."Key :".$password;
+  
+    if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+    //echo " jhjkhj".openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+    return openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+  } 
 
 $result = $pdo->query("SELECT * FROM students ORDER BY ID DESC");
 include("Navigation.php")
@@ -28,13 +40,13 @@ include("Navigation.php")
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {         
         echo "<tr>";
         echo "<td>".$row['regno']."</td>";
-        echo "<td>".$row['sname']."</td>";
+        echo "<td>".decrypt(base64_decode(($row['sname'])),'ucensss')."</td>";      
         echo "<td>".$row['dob']."</td>";    
         echo "<td>".$row['course']."</td>"; 
         echo "<td>".$row['branch']."</td>"; 
         echo "<td>".$row['syear']."</td>"; 
-        echo "<td>".$row['phno']."</td>"; 
-        echo "<td>".$row['email']."</td>"; 
+        echo "<td>".decrypt(base64_decode(($row['phno'])),'ucensss')."</td>"; 
+        echo "<td>".decrypt(base64_decode(($row['email'])),'ucensss')."</td>"; 
         echo "<td><button class='btn btn-primary'><a style='color:white' href=\"addstudents.php?id=$row[ID]\">Edit</a></button> </td>";    
     }
     ?>

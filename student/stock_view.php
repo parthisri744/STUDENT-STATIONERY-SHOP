@@ -1,53 +1,39 @@
 <?php
-// Initialize the session
+include_once("config.php");
+ require_once "config.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
- 
-// Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
-    exit;
-}
-// Include config file
-require_once "config.php";
-//$sql = "SELECT * FROM adminstock";
-//$query = $pdo->prepare($sql);
-//$query->execute();
-//$row = $query->fetch(PDO::FETCH_ASSOC); 
-$result = $pdo->query("SELECT * FROM adminstock");
+   //exit;
+}  
+
+$result = $pdo->query("SELECT * FROM adminstock ");
+include("Navigation.php")
 ?>
 <link rel="stylesheet" href="search.css">
-<style type="text/css">
-        body{ font: 14px sans-serif;background-color:lightblue }
-        .wrapper{ width: 350px; padding: 10px;text-align:left;}
-        .help-block{color:red}
-    </style>
-    <div>
-        <?php include_once("Navigation.php")  ?>
-
-    </div> 
-    <h4 style="float:right">Available Balance:<?php echo htmlspecialchars($_SESSION["balance"]);?></h4>
-    <center><br><br>
-    <table id='myTable' style="width:150px;">
+<div align="center">
+    <h1 >Stock Availability </h1>
+    <table id='myTable' style="width:500px">
  
-    <tr bgcolor='#CCCCCC'><th>Product Name</th><th>Product Value</th></tr>
+    <tr bgcolor='#CCCCCC'><th>Product Name</th><th scope='col'>Product Quantity</th><th>Product Price</th></tr>
     <?php     
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {         
         echo "<tr>";
         echo "<td>".$row['product_name']."</td>";
-        echo "<td>".$row['product_value']."</td>";
-            
+        echo "<td>".$row['product_quantity']."</td>";
+        echo "<td>".$row['product_price']."</td>";    
+        $furl= "stockdelete.php?id=".$row['ID'];
+       // echo "<td><button class='btn btn-primary'  style='background-color:#00cc44'><a style='color:white' href=\"stockedit.php?id=$row[ID]\">Update</a></button> </td>";
+        //echo "<td><button style='background-color:#cc0044' class='btn btn-primary' onClick='myfun()'>Delete</button> </td>";    
+    
     }
     ?>
-    </table></center>
-    
-    <div class="page-header"><br>
-    <?php echo $row['product_name'] ?>
-    
-    <p>
-       <!-- <a href="reset-password.php" class="btn">Reset Your Password</a> -->
-       <center> <a href="logout.php" class="btn small">Sign Out of Your Account</a></center>
-    </p><br/>
-    <div>
-    <?php include_once("Footer.php") ?>
     </div>
-
+    </table>
+    <br/>
+    <div>
+ <?php include_once("Footer.php") ?>
+</div>

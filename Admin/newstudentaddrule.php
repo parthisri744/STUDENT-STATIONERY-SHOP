@@ -45,7 +45,7 @@ class useradd {
     public function get_errors(){
        return  $this->err;
        
-    }    
+    }
 }
 $error = "";
 //echo ($_SERVER["PHP_SELF"]).?id=$_GET["id"];

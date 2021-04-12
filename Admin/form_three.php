@@ -23,6 +23,17 @@ class useradd {
             return false;
         }
     }
+    public function encrypt($plaintext, $password) {
+        $method = "AES-256-CBC";
+       $key = hash('sha256', $password, true);
+        $iv = openssl_random_pseudo_bytes(16);
+    
+        $ciphertext = openssl_encrypt($plaintext, $method, $key, OPENSSL_RAW_DATA, $iv);
+        $hash = hash_hmac('sha256', $ciphertext . $iv, $key, true);
+    
+        return $iv . $hash . $ciphertext;
+    } 
+      
     public function insert($phno,$stu_address,$email,$password,$id) {
        $database=new PDO("mysql:host=localhost;dbname=SSS","root","");
        // $sql="UPDATE students SET phno =:phno,stu_address=:stu_address,email=:email WHERE ID=:id ";;
@@ -56,14 +67,18 @@ $idi.='?id='.$_GET["id"];
 //echo $idi;
 //$curl="stu_view.php?id=".$_GET["id"];
 $obj=new useradd();
-$phno= $obj->get_data_from_post("phno");
+$bphno= $obj->get_data_from_post("phno");
 $stu_address= $obj->get_data_from_post("stu_address");
-$email= $obj->get_data_from_post("email");
+$bemail= $obj->get_data_from_post("email");
 $password= $obj->get_data_from_post("password");
-if(($obj->check_empty_errors($phno) && $obj->check_empty_errors($stu_address) && $obj->check_empty_errors($email) && $obj->check_empty_errors($password))==true) {
+if(($obj->check_empty_errors($bphno) && $obj->check_empty_errors($stu_address) && $obj->check_empty_errors($bemail) && $obj->check_empty_errors($password))==true) {
      $error="";
 } else {
-    if($obj->check_empty_errors($phno)==false){
+    if($obj->check_empty_errors($bphno)==false){
+        $phno=base64_encode($obj->encrypt($bphno,'ucensss'));
+        $email=base64_encode($obj->encrypt($bemail,'ucensss'));
+       //echo "Phone No Decryption ".$obj->decrypt(base64_decode(($email)),'ucensss');
+       //echo "<br/>Decryption Email ".$obj->decrypt(base64_decode(($phno)),'ucensss');
         $i= $obj->insert($phno,$stu_address,$email,$password,$_GET["id"]);
         if($i==true){
             $succ="Submitted Successfully ";

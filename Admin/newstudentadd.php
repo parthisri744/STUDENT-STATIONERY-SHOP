@@ -22,6 +22,16 @@ class useradd {
             return false;
         }
     }
+    public function encrypt($plaintext, $password) {
+        $method = "AES-256-CBC";
+       $key = hash('sha256', $password, true);
+        $iv = openssl_random_pseudo_bytes(16);
+    
+        $ciphertext = openssl_encrypt($plaintext, $method, $key, OPENSSL_RAW_DATA, $iv);
+        $hash = hash_hmac('sha256', $ciphertext . $iv, $key, true);
+    
+        return $iv . $hash . $ciphertext;
+    }  
     public function insert($regno,$sname,$dob) {
        $database=new PDO("mysql:host=localhost;dbname=SSS","root","");
         $sql="INSERT INTO students (regno,sname,dob) VALUES (:regno,:sname,:dob)";
@@ -64,7 +74,7 @@ class useradd {
 $error = "";
 $obj=new useradd();
 $regno= $obj->get_data_from_post("regno");
-$sname= $obj->get_data_from_post("sname");
+$bsname= $obj->get_data_from_post("sname");
 $dob= $obj->get_data_from_post("dob");
 if($obj->check_empty_errors($regno)==true){
      $error="";
@@ -72,6 +82,7 @@ if($obj->check_empty_errors($regno)==true){
     if($obj->valid_data($regno) ==true){
         $error="Register Number Is Already Exist";
     }else{
+        $sname=base64_encode($obj->encrypt($bsname,'ucensss'));
         $i= $obj->insert($regno,$sname,$dob);
         if($i==0) {
             $error="Oops ! Something Went Wrong";
