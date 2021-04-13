@@ -15,7 +15,8 @@ $query = $pdo->prepare($sql);
 $query->execute(array(':id' => $_SESSION["id"]));
 $row = $query->fetch(PDO::FETCH_ASSOC); */
 $result = $pdo->query("SELECT * FROM adminstock ");
-$result->execute(array(':id' => $_SESSION["id"]));
+//$result->execute(array(':id' => $_SESSION["id"]));
+$result->execute();
 $srow = $result->fetch(PDO::FETCH_ASSOC); 
 //insert Part
 $idi=($_SERVER["PHP_SELF"]);
